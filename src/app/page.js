@@ -1,5 +1,5 @@
 "use client";
-
+import dynamic from 'next/dynamic';
 import React, { useState } from "react";
 import { auth } from "@/lib/firebase";
 import {
@@ -166,5 +166,4 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
+export default dynamic(() => Promise.resolve(Login), { ssr: false });
