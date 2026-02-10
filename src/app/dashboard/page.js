@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image"; // ✅ FIX
 import {
   MdHotel,
   MdStar,
@@ -13,7 +14,6 @@ import {
 
 /* ---------------- DATA ---------------- */
 
-// Affordable Hotels
 const affordableHotels = [
   {
     id: 1,
@@ -41,7 +41,6 @@ const affordableHotels = [
   },
 ];
 
-// Premium Hotels
 const premiumHotels = [
   {
     id: 4,
@@ -75,17 +74,20 @@ export default function Dashboard() {
   const router = useRouter();
   const [tab, setTab] = useState("affordable");
   const [language, setLanguage] = useState("English");
+
   const hotels = tab === "affordable" ? affordableHotels : premiumHotels;
 
   const bookHotel = (hotel) => {
-    localStorage.setItem("selectedHotel", JSON.stringify(hotel));
-    router.push("/payment");
+    if (typeof window !== "undefined") { // ✅ SAFE
+      localStorage.setItem("selectedHotel", JSON.stringify(hotel));
+      router.push("/payment");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
 
-      {/* ---------- HEADER ---------- */}
+      {/* HEADER */}
       <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-b-3xl shadow">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold">🏨 Hotel Booking Dashboard</h1>
@@ -105,7 +107,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* ---------- STATS ---------- */}
+      {/* STATS */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
         <Stat icon={MdHotel} title="Hotels" value={hotels.length} />
         <Stat icon={MdPerson} title="Guests Today" value="320+" />
@@ -113,7 +115,7 @@ export default function Dashboard() {
         <Stat icon={MdAttachMoney} title="Revenue" value="₹42K" />
       </section>
 
-      {/* ---------- TABS ---------- */}
+      {/* TABS */}
       <div className="flex justify-center gap-4 mt-2">
         <TabButton active={tab === "affordable"} onClick={() => setTab("affordable")}>
           Affordable Hotels
@@ -123,21 +125,24 @@ export default function Dashboard() {
         </TabButton>
       </div>
 
-      {/* ---------- HOTEL CARDS ---------- */}
+      {/* HOTEL CARDS */}
       <main className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {hotels.map((hotel) => (
           <div
             key={hotel.id}
             className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden"
           >
-            <img
+            <Image
               src={hotel.image}
-              className="h-48 w-full object-cover"
               alt={hotel.name}
+              width={400}
+              height={200}
+              className="h-48 w-full object-cover"
             />
 
             <div className="p-4 space-y-2">
               <h3 className="text-lg font-bold">{hotel.name}</h3>
+
               <p className="text-gray-600 flex items-center gap-1">
                 <MdLocationOn /> {hotel.location}
               </p>
@@ -161,17 +166,19 @@ export default function Dashboard() {
         ))}
       </main>
 
-      {/* ---------- MAP ---------- */}
+      {/* MAP */}
       <section className="p-6">
         <h2 className="text-xl font-bold mb-3">📍 Hotel Locations</h2>
         <iframe
+          title="Hotel Locations"
           className="w-full h-64 rounded-2xl shadow"
           src="https://www.google.com/maps?q=India&output=embed"
           loading="lazy"
-        ></iframe>
+          referrerPolicy="no-referrer-when-downgrade" // ✅ FIX
+        />
       </section>
 
-      {/* ---------- FOOTER ---------- */}
+      {/* FOOTER */}
       <footer className="bg-gray-900 text-white text-center py-4">
         © 2026 Hotel Booking System • Secure • Responsive • Professional
       </footer>
@@ -195,9 +202,7 @@ const TabButton = ({ children, active, onClick }) => (
   <button
     onClick={onClick}
     className={`px-6 py-2 rounded-xl font-semibold transition ${
-      active
-        ? "bg-blue-600 text-white"
-        : "bg-white text-gray-700 shadow"
+      active ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"
     }`}
   >
     {children}
