@@ -49,7 +49,7 @@ export default function Navbar({ onMenuClick, onSearch }) {
 
           <div className="flex items-center gap-2 font-bold text-lg">
             <MdHotel className="text-blue-600" />
-            StayFinder
+            Mybooking
           </div>
         </div>
 
