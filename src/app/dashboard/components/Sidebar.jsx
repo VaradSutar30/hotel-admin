@@ -2,39 +2,81 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import SidebarButton from "./SidebarButton";
 import {
   MdDashboard,
-  MdSecurity,
-  MdLiveTv,
+  MdBookOnline,
+  MdBarChart,
   MdSettings,
   MdMenu,
   MdClose,
+  MdPeople,
+  MdOutlineStar,
+  MdOutlineAttachMoney,
+  MdInfoOutline,
+  MdListAlt,
+  MdReceiptLong,
 } from "react-icons/md";
+
+import SidebarButton from "./SidebarButton";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const menu = [
+  /* MAIN MENU */
+  const mainMenu = [
     { label: "Dashboard", href: "/dashboard", icon: MdDashboard },
-    { label: "Live Monitoring", href: "/dashboard/live", icon: MdLiveTv },
-    { label: "Security", href: "/dashboard/security", icon: MdSecurity },
+    { label: "Bookings", href: "/dashboard/bookings", icon: MdBookOnline },
+    { label: "Guests", href: "/dashboard/guests", icon: MdPeople },
+    { label: "Analytics", href: "/dashboard/analytics", icon: MdBarChart },
+  ];
+
+  /* BOOKING INFO */
+  const bookingMenu = [
+    {
+      label: "Invoices",
+      href: "/dashboard/bookings/invoices",
+      icon: MdReceiptLong,
+    },
+  ];
+
+  /* HOTEL MANAGEMENT */
+  const hotelMenu = [
+    { label: "All Hotels", href: "/dashboard/hotels", icon: MdListAlt },
+    {
+      label: "Affordable Hotels",
+      href: "/dashboard/hotels/affordable",
+      icon: MdOutlineAttachMoney,
+    },
+    {
+      label: "Premium Hotels",
+      href: "/dashboard/hotels/premium",
+      icon: MdOutlineStar,
+    },
+    {
+      label: "Hotel Information",
+      href: "/dashboard/hotels/info",
+      icon: MdInfoOutline,
+    },
+  ];
+
+  /* SETTINGS */
+  const settingsMenu = [
     { label: "Settings", href: "/dashboard/settings", icon: MdSettings },
   ];
 
   return (
     <>
-      {/* 🔹 Mobile Toggle Button */}
+      {/* Mobile Toggle */}
       <button
         onClick={() => setOpen(true)}
         className="lg:hidden fixed top-4 left-4 z-50 
-        bg-slate-900 text-white p-2 rounded-md shadow-md"
+        bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-2 rounded-md shadow-lg"
       >
         <MdMenu size={22} />
       </button>
 
-      {/* 🔹 Overlay (Mobile) */}
+      {/* Overlay */}
       {open && (
         <div
           onClick={() => setOpen(false)}
@@ -42,45 +84,83 @@ const Sidebar = () => {
         />
       )}
 
-      {/* 🔹 Sidebar */}
+      {/* Sidebar */}
       <aside
-        className={`
-          fixed lg:static top-0 left-0 z-50
-          h-full w-64 bg-slate-900 text-white flex flex-col
-          transform transition-transform duration-300
-          ${open ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
-        `}
+        className={`fixed lg:static top-0 left-0 z-50 h-screen w-64
+        bg-slate-900 text-white flex flex-col
+        transform transition-transform duration-300
+        ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Header */}
-        <div className="px-6 py-5 text-xl font-bold tracking-wide 
-          border-b border-slate-700 flex items-center justify-between">
-          ⚡ Admin Panel
-          <button
-            onClick={() => setOpen(false)}
-            className="lg:hidden text-slate-300"
-          >
+        <div className="px-6 py-5 text-xl font-bold border-b border-slate-700 flex justify-between items-center">
+          🏨 Hotel Admin
+          <button onClick={() => setOpen(false)} className="lg:hidden">
             <MdClose size={22} />
           </button>
         </div>
 
-        {/* Menu */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {menu.map((item) => (
-            <SidebarButton
-              key={item.href}
-              icon={item.icon}
-              label={item.label}
-              href={item.href}
-              active={pathname === item.href}
-              onClick={() => setOpen(false)}
-            />
-          ))}
+        {/* MENU */}
+        <nav className="px-3 py-4 space-y-6 overflow-y-auto">
+          {/* MAIN */}
+          <div>
+            <p className="px-3 text-xs text-slate-400 uppercase mb-2">Main</p>
+            {mainMenu.map((item) => (
+              <SidebarButton
+                key={item.href}
+                {...item}
+                active={pathname === item.href}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
+
+          {/* BOOKING INFO */}
+          <div>
+            <p className="px-3 text-xs text-slate-400 uppercase mb-2">
+              Booking Info
+            </p>
+            {bookingMenu.map((item) => (
+              <SidebarButton
+                key={item.href}
+                {...item}
+                active={pathname === item.href}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
+
+          {/* HOTEL MANAGEMENT */}
+          <div>
+            <p className="px-3 text-xs text-slate-400 uppercase mb-2">
+              Hotel Management
+            </p>
+            {hotelMenu.map((item) => (
+              <SidebarButton
+                key={item.href}
+                {...item}
+                active={pathname === item.href}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
+
+          {/* SETTINGS */}
+          <div>
+            <p className="px-3 text-xs text-slate-400 uppercase mb-2">System</p>
+            {settingsMenu.map((item) => (
+              <SidebarButton
+                key={item.href}
+                {...item}
+                active={pathname === item.href}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-4 text-xs text-slate-400 border-t border-slate-700">
-          © 2026 Dashboard
+        <div className="px-6 py-4 text-xs text-slate-400 border-t border-slate-700 mt-auto">
+          © 2026 Hotel Management System
         </div>
       </aside>
     </>

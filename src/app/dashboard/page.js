@@ -1,94 +1,205 @@
 "use client";
 
-import React from "react";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  MdHotel,
+  MdStar,
+  MdAttachMoney,
+  MdPerson,
+  MdLanguage,
+  MdLocationOn,
+} from "react-icons/md";
 
-const hotels = [
+/* ---------------- DATA ---------------- */
+
+// Affordable Hotels
+const affordableHotels = [
   {
     id: 1,
-    name: "Ocean View Resort",
-    location: "Goa",
-    price: 5000,
-    image: "https://source.unsplash.com/400x200/?resort",
+    name: "Comfort Stay Srinagar",
+    location: "Srinagar, J&K",
+    price: 1500,
+    rating: 4.2,
+    image: "/images/affordable/srinagar1.jfif",
   },
   {
     id: 2,
-    name: "Mountain Retreat",
-    location: "Manali",
-    price: 4500,
-    image: "https://source.unsplash.com/400x200/?mountain,resort",
+    name: "Hill View Budget Inn",
+    location: "Manali, HP",
+    price: 1400,
+    rating: 4.0,
+    image: "/images/affordable/manali1.avif",
   },
   {
     id: 3,
-    name: "City Central Hotel",
-    location: "Mumbai",
-    price: 3500,
-    image: "https://source.unsplash.com/400x200/?hotel,city",
-  },
-  {
-    id: 4,
-    name: "Lakeside Villa",
-    location: "Udaipur",
-    price: 4800,
-    image: "https://source.unsplash.com/400x200/?lake,resort",
+    name: "City Budget Stay",
+    location: "Pune, Maharashtra",
+    price: 1300,
+    rating: 3.9,
+    image: "/images/affordable/pune1.jfif",
   },
 ];
 
-const Dashboard = () => {
+// Premium Hotels
+const premiumHotels = [
+  {
+    id: 4,
+    name: "Ocean View Resort",
+    location: "Goa",
+    price: 5000,
+    rating: 4.8,
+    image: "/images/goa.jfif",
+  },
+  {
+    id: 5,
+    name: "Mountain Retreat",
+    location: "Manali",
+    price: 4500,
+    rating: 4.6,
+    image: "/images/manali.jpg",
+  },
+  {
+    id: 6,
+    name: "Lakeside Villa",
+    location: "Udaipur",
+    price: 4800,
+    rating: 4.7,
+    image: "/images/udaipur.jfif",
+  },
+];
+
+/* ---------------- COMPONENT ---------------- */
+
+export default function Dashboard() {
   const router = useRouter();
+  const [tab, setTab] = useState("affordable");
+  const [language, setLanguage] = useState("English");
+  const hotels = tab === "affordable" ? affordableHotels : premiumHotels;
 
-  const logout = async () => {
-    await signOut(auth);
-    router.push("/");
-  };
-
-  const handleBooking = (hotel) => {
-    alert(`You have booked ${hotel.name} in ${hotel.location} for ₹${hotel.price}`);
-    // TODO: Save booking to Firebase
+  const bookHotel = (hotel) => {
+    localStorage.setItem("selectedHotel", JSON.stringify(hotel));
+    router.push("/payment");
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-     
-       
- {/* Hotels List */}
-      <section className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-gray-100">
+
+      {/* ---------- HEADER ---------- */}
+      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-b-3xl shadow">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <h1 className="text-3xl font-bold">🏨 Hotel Booking Dashboard</h1>
+
+          <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl">
+            <MdLanguage />
+            <select
+              className="bg-transparent outline-none"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option>English</option>
+              <option>Hindi</option>
+              <option>Marathi</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      {/* ---------- STATS ---------- */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
+        <Stat icon={MdHotel} title="Hotels" value={hotels.length} />
+        <Stat icon={MdPerson} title="Guests Today" value="320+" />
+        <Stat icon={MdStar} title="Avg Rating" value="4.4" />
+        <Stat icon={MdAttachMoney} title="Revenue" value="₹42K" />
+      </section>
+
+      {/* ---------- TABS ---------- */}
+      <div className="flex justify-center gap-4 mt-2">
+        <TabButton active={tab === "affordable"} onClick={() => setTab("affordable")}>
+          Affordable Hotels
+        </TabButton>
+        <TabButton active={tab === "premium"} onClick={() => setTab("premium")}>
+          Premium Hotels
+        </TabButton>
+      </div>
+
+      {/* ---------- HOTEL CARDS ---------- */}
+      <main className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {hotels.map((hotel) => (
           <div
             key={hotel.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition flex flex-col"
+            className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden"
           >
             <img
               src={hotel.image}
+              className="h-48 w-full object-cover"
               alt={hotel.name}
-              className="w-full h-48 object-cover"
             />
-            <div className="p-4 flex flex-col flex-grow">
-              <h3 className="text-lg md:text-xl font-bold">{hotel.name}</h3>
-              <p className="text-gray-600">{hotel.location}</p>
-              <p className="text-gray-800 font-semibold mt-2">₹{hotel.price} / night</p>
+
+            <div className="p-4 space-y-2">
+              <h3 className="text-lg font-bold">{hotel.name}</h3>
+              <p className="text-gray-600 flex items-center gap-1">
+                <MdLocationOn /> {hotel.location}
+              </p>
+
+              <div className="flex items-center gap-1 text-yellow-500">
+                <MdStar /> {hotel.rating}
+              </div>
+
+              <p className="font-semibold text-blue-600">
+                ₹{hotel.price} / night
+              </p>
+
               <button
-                onClick={() => handleBooking(hotel)}
-                className="mt-auto w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                onClick={() => bookHotel(hotel)}
+                className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
               >
                 Book Now
               </button>
             </div>
           </div>
         ))}
+      </main>
+
+      {/* ---------- MAP ---------- */}
+      <section className="p-6">
+        <h2 className="text-xl font-bold mb-3">📍 Hotel Locations</h2>
+        <iframe
+          className="w-full h-64 rounded-2xl shadow"
+          src="https://www.google.com/maps?q=India&output=embed"
+          loading="lazy"
+        ></iframe>
       </section>
 
-      {/* Footer / Features */}
-      <footer className="bg-gray-200 p-6 text-center mt-auto">
-        <h4 className="font-bold mb-2">Why Choose Us?</h4>
-        <p className="text-sm md:text-base">
-          ✅ Easy Booking & Payment | ✅ 24/7 Support | ✅ Best Hotels & Deals
-        </p>
+      {/* ---------- FOOTER ---------- */}
+      <footer className="bg-gray-900 text-white text-center py-4">
+        © 2026 Hotel Booking System • Secure • Responsive • Professional
       </footer>
     </div>
   );
-};
+}
 
-export default Dashboard;
+/* ---------------- SMALL COMPONENTS ---------------- */
+
+const Stat = ({ icon: Icon, title, value }) => (
+  <div className="bg-white p-4 rounded-2xl shadow flex items-center gap-3">
+    <Icon className="text-3xl text-blue-600" />
+    <div>
+      <p className="font-bold text-lg">{value}</p>
+      <p className="text-gray-500 text-sm">{title}</p>
+    </div>
+  </div>
+);
+
+const TabButton = ({ children, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`px-6 py-2 rounded-xl font-semibold transition ${
+      active
+        ? "bg-blue-600 text-white"
+        : "bg-white text-gray-700 shadow"
+    }`}
+  >
+    {children}
+  </button>
+);

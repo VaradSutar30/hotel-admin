@@ -1,4 +1,6 @@
-'use client';
+// Removed "use client" because the root layout in Next.js should be a Server Component by default.
+// This allows exporting "metadata" for SEO and page metadata.
+// If you added "use client" for a specific reason (e.g., client-side logic), let me know, and we can adjust.
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

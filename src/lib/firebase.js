@@ -1,8 +1,6 @@
-"use client";
-
 import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // हे महत्त्वाचे आहे
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,8 +11,8 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Firebase ॲप इनिशियलाइज करताना एरर येऊ नये म्हणून ही पद्धत उत्तम आहे
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app); // हे एक्सपोर्ट केल्यामुळे एरर निघून जाईल
+export { db, auth };
